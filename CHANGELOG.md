@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.14](https://github.com/postmodern-templates/helm-deploy-template/compare/v0.3.13...v0.3.14) (2026-11-03)
+
+
+### Features
+
+* Apply parent template v0.7.13 ([#172](https://github.com/postmodern-templates/helm-deploy-template/issues/172)) ([de041db](https://github.com/postmodern-templates/helm-deploy-template/commit/de041db4f6a4a3711b73687a9c9eaa5a20c99b10))
+
+
+### Miscellaneous
+
+* Remove files the parent template deleted ([#176](https://github.com/postmodern-templates/helm-deploy-template/issues/176)) ([f90dcb0](https://github.com/postmodern-templates/helm-deploy-template/commit/f90dcb001b98c152b1242ba1e3bc0cbc7138c379))
+
 ## [0.3.13](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.12...v0.3.13) (2025-09-10)
 
 
