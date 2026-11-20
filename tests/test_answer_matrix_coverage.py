@@ -1,11 +1,12 @@
 """Checks answer_matrix.py's own completeness against copier.yml's real question set.
 
-Generic by design: parses whatever copier.yml actually defines, rather than hardcoding
-this repo's specific question names -- see answer_matrix.py for the repo-specific
+Generic by design: parses whatever copier.yml defines, rather than hardcoding
+this repo's specific question names; see answer_matrix.py for the repo-specific
 answer data these checks audit, including COVERAGE_EXEMPT_QUESTIONS for any question
 that has a real, deliberate reason not to be fully exercised here.
 """
 
+import json
 import warnings
 from pathlib import Path
 
@@ -35,6 +36,18 @@ def _load_questions(template_source: Path) -> dict:
     }
 
 
+def _hashable(value):
+    """Make a choice value comparable in a set; a `type: json` choice can be a mapping.
+
+    Returns:
+        `value` itself, or its sorted-key JSON when it's a mapping or list.
+
+    """
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, sort_keys=True)
+    return value
+
+
 def _question_choices(question: dict) -> set | None:
     """Extract the set of real answer values a question's `choices:` allows.
 
@@ -46,17 +59,30 @@ def _question_choices(question: dict) -> set | None:
     if choices is None:
         return None
     if isinstance(choices, list):
-        return set(choices)
-    return {v["value"] if isinstance(v, dict) else v for v in choices.values()}
+        return {_hashable(choice) for choice in choices}
+    return {
+        _hashable(v["value"] if isinstance(v, dict) else v) for v in choices.values()
+    }
+
+
+def _answered_choices(question: dict, answers: list) -> set:
+    """Collect the choice values a question's answers use; a multiselect answers a list.
+
+    Returns:
+        The set of choice values, in the form `_question_choices` returns.
+
+    """
+    if question.get("multiselect"):
+        return {_hashable(item) for answer in answers for item in answer}
+    return {_hashable(answer) for answer in answers}
 
 
 def test_answer_matrix_covers_all_choices(template_source):
     """Verify every choice of every question is exercised somewhere in ANSWER_MATRIX.
 
-    A question with N choices but only ever answered with one of them means the other
-    N-1 code paths it gates (`when:`/Jinja `{% if %}` branches keyed on that value)
-    never get rendered by this suite at all -- silently, since nothing else here would
-    notice a whole branch just never ran.
+    A question with N choices answered with only one leaves the other N-1 paths it gates
+    (`when:` and `{% if %}` branches on that value) unrendered by this suite, and
+    nothing else would notice.
     """
     questions = _load_questions(template_source)
     errors = []
@@ -66,7 +92,9 @@ def test_answer_matrix_covers_all_choices(template_source):
         choices = _question_choices(question)
         if not choices:
             continue
-        answered = {combo[name] for combo in ANSWER_MATRIX if name in combo}
+        answered = _answered_choices(
+            question, [combo[name] for combo in ANSWER_MATRIX if name in combo]
+        )
         missing = choices - answered
         if missing:
             errors.append(
@@ -79,12 +107,10 @@ def test_answer_matrix_covers_all_choices(template_source):
 def test_warn_on_unanswered_required_questions(template_source):
     """Warn about a no-default question that answer_matrix.py never explicitly answers.
 
-    Copier questions without a `default:` are required -- `copier copy --defaults`
-    (used throughout this suite) raises `ValueError: Question "X" is required` if such
-    a question isn't supplied via `-d`. The render tests already fail hard when that
-    happens; this is a faster, more specific pointer at *which* question is the gap,
-    surfaced as a warning rather than a second failure, since the render tests are what
-    actually enforce this.
+    A Copier question without a `default:` is required, and `copier copy --defaults`
+    (used throughout this suite) fails with `ValueError: Question "X" is required`
+    unless it's passed with `-d`. The render tests already fail then; this warning names
+    the question, without failing a second time.
     """
     questions = _load_questions(template_source)
     answered_keys = {key for combo in ANSWER_MATRIX for key in combo}
@@ -94,7 +120,7 @@ def test_warn_on_unanswered_required_questions(template_source):
         if "default" not in question and name not in answered_keys:
             warnings.warn(
                 f"Copier question {name!r} has no default and isn't explicitly "
-                "answered by any answer_matrix.py combination -- `copier copy "
+                "answered by any answer_matrix.py combination; `copier copy "
                 '--defaults` will fail with "Question is required" until it is.',
                 stacklevel=1,
             )
