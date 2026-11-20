@@ -1,9 +1,6 @@
 {
   "projectName": "helm-deploy-template",
-  "projectOwner": "postmodern-templates"
-}
-
-  "projectOwner": "natescherer",
+  "projectOwner": "postmodern-templates",
   "files": [
     "README.md"
   ],
