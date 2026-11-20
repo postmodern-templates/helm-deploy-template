@@ -1,36 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
-        <loc>https://natescherer.github.io/latest/</loc>
+        <loc>https://postmodern-templates.github.io/latest/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/prerequisites/</loc>
+        <loc>https://postmodern-templates.github.io/latest/getting-started/existing-project/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/applying_to_existing_projects/</loc>
+        <loc>https://postmodern-templates.github.io/latest/getting-started/new-project/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/template_questions/</loc>
+        <loc>https://postmodern-templates.github.io/latest/getting-started/prerequisites/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/lifecycle_management/</loc>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/development/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/token_permissions/</loc>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/extending-the-template/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/public_vs_private_repos/</loc>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/integration-testing/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/platform_notes/</loc>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/integration-testing/runbook-azdo/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/platform_notes/github_org/</loc>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/integration-testing/runbook-github/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/platform_notes/azure_devops/</loc>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/releasing/</loc>
       </url>
       <url>
-        <loc>https://natescherer.github.io/latest/components/template_engine/</loc>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/troubleshooting/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/updating-from-template/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/maintaining/upgrading-from-0x/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/reference/azure-devops/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/reference/compatibility/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/reference/features/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/reference/manual-repo-settings/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/reference/stability-policy/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/reference/template-questions/</loc>
+      </url>
+      <url>
+        <loc>https://postmodern-templates.github.io/latest/reference/token-permissions/</loc>
       </url>
 </urlset>
