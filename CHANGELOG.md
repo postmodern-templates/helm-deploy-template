@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.0 (2026-11-20)
+
+### Breaking Changes
+
+#### Update to parent template 0.8.4
+
+Replaces Trunk, release-please, and the Invoke tasks with mise, prek, and Knope, and restructures the workflows and docs. See the [parent's upgrade guide](https://postmodern-templates.github.io/repo-template/latest/maintaining/upgrading-from-0x/).
+
+`k8s_envs` now lives in `copier.yml`'s `Helm Deploy Questions` region instead of an included `copier-deployment-envs.yml`. A child template moves its environments into that region, and its deploy pipeline is registered as `[<repo>] Deploy (Manual) - Helmfile Sync` on a new copy.
+
+### Features
+
+- apply parent template v0.7.13 (#172)
+
+### Fixes
+
+- add answers-file to update check (#170)
+- repair .all-contributorsrc's merged JSON (#179)
+
 ## 0.3.13 (2025-09-10)
 
 
