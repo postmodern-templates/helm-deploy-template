@@ -1,6 +1,7 @@
 [default]
 extend-ignore-re = [
   '\(\[.*\]\(https:\/\/github\.com\/.*\)\)', # CHANGELOG.md links
+  '-g[0-9a-f]{7,}\b', # git describe hashes, like copier-answers.yml's _commit
 ]
 
 [default.extend-words]
@@ -9,8 +10,10 @@ Nate = "Nate"
 Scherer = "Scherer"
 # GitHub Username
 natescherer = "natescherer"
+# GitHub Organization
+postmodern-templates = "postmodern-templates"
 # Repo Name
-postmodern-helm-deploy-copiertemplate = "postmodern-helm-deploy-copiertemplate"
+helm-deploy-template = "helm-deploy-template"
 # Acronym for Azure Kubernetes Service
 aks = "aks"
 # Custom Words Below

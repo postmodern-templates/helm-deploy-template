@@ -3,7 +3,7 @@
 #:schema https://www.schemastore.org/prek.json
 
 default_install_hook_types = ["pre-commit", "commit-msg"]
-exclude = '(\.copier\-answers\.yml|CHANGELOG\.md|docs_site/.*)'
+exclude = '(\.copier\-answers\.yml|CHANGELOG\.md|docs-site/.*)'
 
 [[repos]]
 repo = "local"
@@ -16,10 +16,12 @@ description = "Runs actionlint to lint GitHub Actions workflow files"
 language = "system"
 entry = "mise x -- actionlint"
 types = ["yaml"]
-# Also matches template/.../workflows/ -- a Template-type project embeds a full,
-# unrendered copy of template/ (via copy-template-files) for its own children to use,
-# regardless of *this* project's own developer_platform.
+{%- if is_template %}
+# Also matches template/.../workflows/ to cover workflows inside the template
 files = "(^\\.github/workflows/|^template/.*workflows/)"
+{%- else %}
+files = "^\\.github/workflows/"
+{%- endif %}
 {%- endif %}
 
 [[repos.hooks]]
@@ -33,9 +35,20 @@ args = [
   ".config/committed.toml",
   "--fixup",
   "--wip",
-  "--commit-file"
+  "--commit-file",
 ]
 stages = ["commit-msg"]
+{%- if using_github %}
+
+[[repos.hooks]]
+id = "gh-settings-validate"
+name = "gh-settings validate"
+description = "Validates .github/settings.yml, offline"
+language = "system"
+entry = "mise x -- gh-settings validate"
+files = "^\\.github/settings\\.yml$"
+pass_filenames = false
+{%- endif %}
 
 [[repos.hooks]]
 id = "lychee"
@@ -43,9 +56,22 @@ name = "lychee"
 description = "Checks files for broken links"
 language = "system"
 entry = "mise x -- lychee --no-progress -c .config/lychee.toml --cache"
+{%- if zensical_ghpages or (is_template and using_github) %}
+{%- if zensical_ghpages %}
+# This project's own docs publish only with its first release, and a new page only with
+# the release after it's added, so a commit or PR can't check links to them.
+{%- set own_docs = docs_root %}
+{%- else %}
+# copier.yml links to this project's own docs on main, where a page a PR adds exists
+# only once the PR merges, so a commit or PR can't check links to them.
+{%- set own_docs = 'https://github.com/' ~ github_repo_owner ~ '/' ~ repo_name ~ '/blob/main/docs/' %}
+{%- endif %}
+# The scheduled Repo Health Check doesn't use this hook, and checks them once they exist.
+# `=` keeps lychee from reading the file names prek appends as more patterns.
+args = ['--exclude=^{{ own_docs | regex_escape }}']
+{%- endif %}
 types = ["text"]
-# renovate.json embeds a regex with a backslash-escaped domain (github, dot-escaped,
-# dot-com) whose backslash truncates lychee's URL extraction to a bogus bare domain.
+# renovate.json embeds a regex with a backslash-escaped domain that lychee chokes on
 exclude = "renovate\\.json"
 require_serial = true
 {%- if is_template %}
@@ -64,7 +90,7 @@ require_serial = true
 id = "ruff-format"
 name = "ruff format"
 description = "Run 'ruff format' for extremely fast Python formatting"
-language = "python"
+language = "system"
 entry = "mise x -- ruff format --force-exclude"
 args = ["--config", ".config/ruff.toml"]
 types_or = ["python", "pyi", "jupyter"]
@@ -138,6 +164,7 @@ id = "fix-byte-order-marker"
 
 [[repos.hooks]]
 id = "mixed-line-ending"
+args = ["--fix=lf"]
 
 [[repos.hooks]]
 id = "trailing-whitespace"

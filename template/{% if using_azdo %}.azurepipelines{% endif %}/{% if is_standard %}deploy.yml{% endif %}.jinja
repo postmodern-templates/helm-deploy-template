@@ -1,3 +1,17 @@
+{#- A stage or job ID allows only letters, digits, and underscores: this lowercases the
+    environment ID and joins its alphanumeric runs with underscores. #}
+{%- macro pipeline_id(value) -%}
+{%- set ns = namespace(id="", gap=false) -%}
+{%- for char in value | lower -%}
+{%- if char.isalnum() -%}
+{%- set ns.id = ns.id ~ ("_" if ns.gap and ns.id else "") ~ char -%}
+{%- set ns.gap = false -%}
+{%- else -%}
+{%- set ns.gap = true -%}
+{%- endif -%}
+{%- endfor -%}
+{{ ns.id }}
+{%- endmacro -%}
 name: $(BuildId)
 
 trigger:
@@ -12,7 +26,7 @@ variables:
 stages:
   {%- for env in k8s_envs %}
   {%- set k8s_cluster = env["id"].split(")")[0].split("(")[0] %}
-  - stage: {{ env["id"] | slugify | replace("-","_") }}
+  - stage: {{ pipeline_id(env["id"]) }}
     displayName: {% if env["display_name"] %}{{ env["display_name"] }}{% else %}{{ env["id"] }}{% endif %}
     {%- if env["azdo_pool_type"] == "private" %}
     pool: {{ env["azdo_pool_name"] }}
@@ -23,7 +37,7 @@ stages:
     {%- if env["depends_on"] == "NoDependency" %}
     dependsOn: ""
     {%- elif env["depends_on"] %}
-    dependsOn: {{ env["depends_on"] | slugify | replace("-","_") }}
+    dependsOn: {{ pipeline_id(env["depends_on"]) }}
     {%- endif %}
     variables:
       {%- if env["k8s_type"] == "aks" %}
@@ -32,7 +46,7 @@ stages:
       {%- endif %}
       HelmfileEnvironment: {{ env["id"] }}
     jobs:
-      - deployment: {{ env["id"] | slugify | replace("-","_") }}
+      - deployment: {{ pipeline_id(env["id"]) }}
         displayName: {% if env["display_name"] %}{{ env["display_name"] }}{% else %}{{ env["id"] }}{% endif %}
         {%- if env["deployment_env"] %}
         environment: {{ env["deployment_env"] }}
